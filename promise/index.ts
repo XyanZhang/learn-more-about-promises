@@ -45,9 +45,9 @@ class MyPromise {
       p2 = new MyPromise((resolve: Function, reject: Function) => {
         setTimeout(() => {
           try {
-            let res = onFulfilled(this.value);
+            let res = onFulfilled(this.value); // 根据返回值进行对应处理，有可能返回的还是promise
             // 处理 res 和 p2 的关系 
-            handlePromise(p2, res, resolve, reject)
+            handlePromise(p2, res, resolve, reject); // 处理返回值和promise2的关系，并且 resolve 或者 reject
           } catch (error) {
             reject(error);
           }
@@ -75,7 +75,33 @@ class MyPromise {
   }
 }
 
-function handlePromise(p2: any, res: any, resolve: Function, reject: Function) {
+function handlePromise(p2: any, x: any, resolve: Function, reject: Function) {
+  if (p2 === x) {
+    return reject(new TypeError('循环引用'));
+  }
+  let then;
+  // x 存在，并且 x 是对象或者函数
+  if (x != null && ((typeof x == 'object' || typeof x == 'function'))) {
+    try {
+      then = x.then; // 此处为什么会获取x.then，因为x有可能是一个类promise（thenable）对象
+      if(isFunction(then)) {
+        // 调用then 方法，传入成功的回调和失败的回调，判断是resolve 还是 reject,之后执行外层的resolve 或者 reject
+        then.call(x, (y: any) => {
+          handlePromise(p2, y, resolve, reject);
+        }, (r: any) => {
+          reject(r);
+        })
+      }else {
+        // x 是普通对象
+        resolve(x);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  } else {
+    // x 是普通值 或者为空
+    resolve(x);
+  }
 }
 
 // my
