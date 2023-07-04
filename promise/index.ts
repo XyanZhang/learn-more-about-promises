@@ -34,19 +34,24 @@ class MyPromise {
   }
 
   then: Function = (onFulfilled: Function, onRejected: Function) => {
-    setTimeout(() => {
-      if(this.status === FULFILLED && onFulfilled) {
-        isFunction(onFulfilled)
-          ? onFulfilled(this.value) 
-          : console.warn('onFulfilled不是函数')
-      } else if(this.status === REJECTED && onRejected) {
-        isFunction(onRejected) 
-         ? onRejected(this.reason)
-         : console.warn('onRejected不是函数')
-      } else {
-        console.warn('pending状态，不能执行then方法')
-      }
-    })
+    let res:any = null;
+    if(this.status === FULFILLED && onFulfilled) {
+      res = isFunction(onFulfilled)
+        ? onFulfilled(this.value) // 返回值作为下一个then的参数
+        : console.warn('onFulfilled不是函数')
+    } else if(this.status === REJECTED && onRejected) {
+      isFunction(onRejected) 
+        ? onRejected(this.reason)
+        : console.warn('onRejected不是函数')
+    } else {
+      console.warn('pending状态，不能执行then方法')
+    }
+    // 返回一个新的Promise
+    let p2 = new MyPromise((resolve: Function, reject: Function) => {
+      console.log('p2 executor')
+      resolve(res);
+    });
+    return p2;
   }
 }
 
@@ -54,8 +59,8 @@ class MyPromise {
 function useMyPromise() {
   let p1:any = new MyPromise((resolve, reject) => {
     console.log('executor')
-    // resolve('resolveValue');
-    reject('rejectReason');
+    resolve('resolveValue');
+    // reject('rejectReason');
   })
   console.log('---------my start---------')
   console.log(p1)
@@ -68,8 +73,13 @@ function useMyPromise() {
   })
   p1.then((res:any) => {
     console.log('my then 2', res) // => resolveValue
+    return new Promise((resolve, reject) => {
+
+    })
   }, (reason:any) => {
     console.log('my reject 2', reason) // => rejectReason
+  }).then((res: any) => {
+    console.log('my promise 2')
   })
   console.log('---------my end---------')
 }
@@ -77,8 +87,8 @@ function useMyPromise() {
 function usePromise() {
   let p2:any = new Promise((resolve, reject) => {
     console.log('origin executor')
-    // resolve('resolveValue');
-    reject('rejectReason');
+    resolve('resolveValue');
+    // reject('rejectReason');
   })
   console.log('=========origin start========')
   console.log(p2)
@@ -89,14 +99,54 @@ function usePromise() {
   }, () => {});
   p2.then((res:any) => {
     console.log('then2', res) // => resolveValue
+    return new Promise((resolve, reject) => {
+      resolve('resolveValue level2')
+    })
   }, (reason:any) => {
     console.log('then2 reason', reason) // => resolveValue
+  }).then((res:any) => {
+    console.log('then level 2', res)
   });
   console.log('=========origin end========')
 }
 
-// executor
-useMyPromise();
-usePromise();
+function myPromiseThen() {
+  let p1:any = new MyPromise((resolve, reject) => {
+    resolve('resolveValue');
+  });
+  console.log('---------my start---------')
+  let p2 = p1.then((res:any) => {
+    console.log('my then 2', res) // => resolveValue
+    return 2
+  })
+  p2.then((res: any) => {
+    console.log('my promise 2', res)
+  })
+  console.log('---------my end---------')
+}
 
+function promiseThen() {
+  let p1:any = new Promise((resolve, reject) => {
+    resolve('resolveValue');
+  });
+  console.log('---------my start---------')
+  let p2 = p1.then((res:any) => {
+    console.log('my then 2', res) // => resolveValue
+    // return new Promise((resolve, reject) => {
+
+    // })
+    return 2; // 自动包装成Promise
+  })
+  p2.then((res: any) => {
+    console.log('my promise 2', res)
+  })
+  console.log('---------my end---------')
+}
+
+// executor
+// useMyPromise();
+// usePromise();
+
+myPromiseThen()
+// promiseThen()
 // excutor resolve reject
