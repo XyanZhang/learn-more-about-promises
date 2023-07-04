@@ -46,11 +46,17 @@ class MyPromise {
     } else {
       console.warn('pending状态，不能执行then方法')
     }
+    let p2 = null;
     // 返回一个新的Promise
-    let p2 = new MyPromise((resolve: Function, reject: Function) => {
-      console.log('p2 executor')
-      resolve(res);
-    });
+    if(res instanceof MyPromise) { 
+      p2 = res;
+    }else {
+      p2 = new MyPromise((resolve: Function, reject: Function) => {
+        if(res) {
+          resolve(res);
+        }
+      });
+    }
     return p2;
   }
 }
@@ -117,7 +123,9 @@ function myPromiseThen() {
   console.log('---------my start---------')
   let p2 = p1.then((res:any) => {
     console.log('my then 2', res) // => resolveValue
-    return 2
+    return new MyPromise((resolve) => {
+      resolve('myPromise level2')
+    })
   })
   p2.then((res: any) => {
     console.log('my promise 2', res)
