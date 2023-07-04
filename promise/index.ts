@@ -29,36 +29,53 @@ class MyPromise {
   };
 
   constructor(executor: executor) {
-    executor(this.onResolved, this.onRejected); 
-    // 执行完毕如果没有resolve或者reject，那么状态还是pending
+    try {
+      executor(this.onResolved, this.onRejected); 
+    } catch (error) {
+      this.onRejected(error);
+    }
   }
 
   then: Function = (onFulfilled: Function, onRejected: Function) => {
-    let res:any = null;
-    if(this.status === FULFILLED && onFulfilled) {
-      res = isFunction(onFulfilled)
-        ? onFulfilled(this.value) // 返回值作为下一个then的参数
-        : console.warn('onFulfilled不是函数')
-    } else if(this.status === REJECTED && onRejected) {
-      isFunction(onRejected) 
-        ? onRejected(this.reason)
-        : console.warn('onRejected不是函数')
-    } else {
-      console.warn('pending状态，不能执行then方法')
-    }
-    let p2 = null;
-    // 返回一个新的Promise
-    if(res instanceof MyPromise) { 
-      p2 = res;
-    }else {
+    onFulfilled = isFunction(onFulfilled) ? onFulfilled : (value: any) => value;
+    onRejected = isFunction(onRejected) ? onRejected : (reason: any) => { throw reason };
+
+    let p2:any = null;
+    if(this.status === FULFILLED) {
       p2 = new MyPromise((resolve: Function, reject: Function) => {
-        if(res) {
-          resolve(res);
-        }
+        setTimeout(() => {
+          try {
+            let res = onFulfilled(this.value);
+            // 处理 res 和 p2 的关系 
+            handlePromise(p2, res, resolve, reject)
+          } catch (error) {
+            reject(error);
+          }
+        }, 0);
       });
+    }
+    if(this.status === REJECTED) {
+      p2 = new MyPromise((resolve: Function, reject: Function) => {
+        setTimeout(() => {
+          try {
+            let res = onRejected(this.reason);
+            // 处理 res 和 p2 的关系 
+            handlePromise(p2, res, resolve, reject)
+          } catch (error) {
+            reject(error);
+          }
+        }, 0);
+      });
+    }
+    // todo：pending状态
+    if(this.status === PENDING) {
+    
     }
     return p2;
   }
+}
+
+function handlePromise(p2: any, res: any, resolve: Function, reject: Function) {
 }
 
 // my
