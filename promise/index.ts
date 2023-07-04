@@ -29,7 +29,16 @@ class MyPromise {
   constructor(executor: executor) {
     executor(this.onResolved, this.onRejected); 
     // 执行完毕如果没有resolve或者reject，那么状态还是pending
+  }
 
+  then: Function = (onFulfilled: Function, onRejected: Function) => {
+    if(this.status === FULFILLED) {
+      onFulfilled(this.value);
+    } else if(this.status === REJECTED) {
+      onRejected(this.reason);
+    } else {
+      console.warn('pending状态，不能执行then方法')
+    }
   }
 }
 
@@ -37,14 +46,17 @@ class MyPromise {
 function useMyPromise() {
   let p1:any = new MyPromise((resolve, reject) => {
     console.log('executor')
-    resolve('resolveValue');
-    reject('rejectReason');
+    // resolve('resolveValue');
+    // reject('rejectReason');
   })
-  console.log('=========my start========')
+  console.log('---------my start---------')
   console.log(p1)
   console.log(p1.status)
   console.log(p1.value)
-  console.log('=========my end========')
+  console.log(p1.then((res:any) => {
+    console.log('my then', res) // => resolveValue
+  }, () => {}));
+  console.log('---------my end---------')
 }
 // origin
 function usePromise() {
@@ -57,6 +69,9 @@ function usePromise() {
   console.log(p2)
   console.log(p2.status)
   console.log(p2.value)
+  console.log(p2.then((res:any) => {
+    console.log('then', res) // => resolveValue
+  }, () => {}));
   console.log('=========origin end========')
 }
 
