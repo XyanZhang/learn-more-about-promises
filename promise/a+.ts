@@ -1,6 +1,6 @@
 // type PromiseFn<T> = (value?: T | PromiseLike<T>) => void; 
 
-namespace MyNamespace {
+export namespace MyNamespace {
   enum PromiseStatus {
     PENDING = 'pending',
     FULFILLED = 'fulfilled',
@@ -47,10 +47,3 @@ namespace MyNamespace {
     }
   }
 }
-
-// 测试
-const promise = new MyNamespace.Promise((resolve, reject) => {
-  // resolve('成功');
-  reject('失败');
-});
-console.log(promise);

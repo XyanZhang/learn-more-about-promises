@@ -72,3 +72,7 @@ promise & x 处理过程
     - 如果 resolvePromise 或者 rejectPromise 已经被调用，忽略它
     - 否则，用 e 作为 reason 拒绝 promise
 - 如果 x 不是一个对象或者函数，用 x fulfill promise
+
+## 自己误解的知识点
+
+promise 中 resolve 并不是立即执行，而是在当前执行栈执行完毕后，再执行 resolve，而resolve 执行后，会执行 then 中的回调函数，这样就可以实现异步的效果
