@@ -24,28 +24,37 @@ export namespace MyNamespace {
 
     // Promise 成功回调
     resolve: (value?: T | PromiseLike<T>) => void = (value?: T | PromiseLike<T>) => {
-      if (this.status !== PromiseStatus.PENDING) {
-        console.warn('不处于 pending 状态，不能 resolve');
-        return;
+      if (value instanceof Promise) {
+        // 如果是 Promise 类型，递归调用
+        return value.then(this.resolve, this.reject)
       }
-      this.status = PromiseStatus.FULFILLED;
-      this.value = value;
+      // 异步改造
+      setTimeout(() => {
+        if (this.status !== PromiseStatus.PENDING) {
+          console.warn('不处于 pending 状态，不能 resolve');
+          return;
+        }
+        this.status = PromiseStatus.FULFILLED;
+        this.value = value;
 
-      // 为什么会有这一步？
-      // 因为 resolve 之后，then 中的回调才会执行，此时pending状态已经变成了 fulfilled
-      this.onFullFilledCallbacks.map(cb => cb(this.value)); // 此处表示 
+        // 为什么会有这一步？
+        // 因为 resolve 之后，then 中的回调才会执行，此时pending状态已经变成了 fulfilled
+        this.onFullFilledCallbacks.map(cb => cb(this.value)); // 此处表示 
+      }, 0);
     };
 
     // Promise 失败回调
     reject: (reason?: any) => void = (reason?: any) => {
-      if (this.status !== PromiseStatus.PENDING) {
-        console.warn('不处于 pending 状态，不能 reject');
-        return;
-      }
-      this.status = PromiseStatus.REJECTED;
-      this.reason = reason;
+      setTimeout(() => {
+        if (this.status !== PromiseStatus.PENDING) {
+          console.warn('不处于 pending 状态，不能 reject');
+          return;
+        }
+        this.status = PromiseStatus.REJECTED;
+        this.reason = reason;
 
-      this.onRejectedCallbacks.map(cb => cb(this.reason));
+        this.onRejectedCallbacks.map(cb => cb(this.reason));
+      }, 0);
     };
 
     then(onFulfilled: (value?: T | PromiseLike<T>) => void, onRejected: (reason?: any) => void) {

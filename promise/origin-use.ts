@@ -4,9 +4,7 @@ function promiseTest() {
   const promise = new MyNamespace.Promise((resolve, reject) => {
     console.log('resolve 之前')
     // setTimeout 模拟异步
-    setTimeout(() => {
-      resolve('成功'); // !执行resolve 的时候会触发 promise.then 设置的回调函数 (关键)
-    }, 0)
+    resolve('成功'); // !执行resolve 的时候会触发 promise.then 设置的回调函数 (关键)
     // console.log('resolve 之后，setTimeout中')
     // reject('失败'); // !执行reject 的时候会触发 promise.catch 设置的回调函数 (关键)
     console.log('resolve 之后');
