@@ -4,7 +4,7 @@ const PENDING = 'pending';
 const FULFILLED = 'fulfilled';
 const REJECTED = 'rejected';
 
-let isFunction = (fn: any) => typeof fn === 'function';
+export let isFunction = (fn: any) => typeof fn === 'function';
 class MyPromise {
   private status: string = PENDING; // 初始pending 状态
   private value: any = undefined;
@@ -198,6 +198,6 @@ function promiseThen() {
 // useMyPromise();
 // usePromise();
 
-myPromiseThen()
+// myPromiseThen()
 // promiseThen()
 // excutor resolve reject
