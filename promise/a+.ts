@@ -138,11 +138,11 @@ export namespace MyNamespace {
     // 如果 x 为 Promise 的话，需要判断以下几个情况：
     // 如果 x 处于等待态，Promise 需保持为等待态直至 x 被执行或拒绝
     // 如果 x 处于其他状态，则用相同的值处理 Promise
-    if (x instanceof Promise) {
-      x.then(function(value) {
-        handlePromiseX(p2, value, resolve, reject)
-      }, reject)
-    }
+    // if (x instanceof Promise) {
+    //   x.then(function(value) {
+    //     handlePromiseX(p2, value, resolve, reject)
+    //   }, reject)
+    // }
     let called = false;
     if(x !== null && (typeof x === 'object' || isFunction(x))) {
       try {

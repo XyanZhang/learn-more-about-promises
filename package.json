@@ -1,0 +1,23 @@
+{
+  "name": "learn-more-about-promises",
+  "version": "1.0.0",
+  "description": "深入学习promise",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XyanZhang/learn-more-about-promises.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/XyanZhang/learn-more-about-promises/issues"
+  },
+  "homepage": "https://github.com/XyanZhang/learn-more-about-promises#readme",
+  "dependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  }
+}
